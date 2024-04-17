@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <title>API</title>
+</head>
+<body>
+    <h1>あいさつAPI</h1>
+    <p>名前を教えて下さい</p>
+    <input id="input" type="text" value="名前" />
+    <button type="button" onclick="connectApi()">送信！</button>
+    <button type="button" onclick="clearInput()">クリア</button>
+    <p id="text"></p>
+    <script>
+        async function connectApi() {
+            // テキストエリアの入力値を取得
+            const inputValue = document.getElementById("input").value;
+            try {
+                // URLを組み立て
+                const url = `http://localhost:8080/hello?name=${inputValue}`;
+                // fetchを使ってAPIにリクエストを送信
+                const response = await fetch(url, { method: "GET" });
+                // エラーレスポンスを処理
+                if (!response.ok) {
+                    switch (response.status) {
+                        default:
+                            // 不明なエラーの場合は、ステータスを含めて表示する
+                            const err_code = response.status;
+                            const err_msg =
+                                "情報を取得できませんでした。（E:" + err_code + ")";
+                            throw new Error(err_msg);
+                    }
+                } else {
+                    // レスポンスからJSONデータを取得し、表示する
+                    const reserved = await response.json();
+                    const message = document.getElementById("text");
+                    message.textContent = reserved.message;
+                }
+            } catch (err_msg) {
+                // エラーメッセージをアラートで表示する
+                alert(err_msg);
+            }
+        }
+        
+        // テキストフィールドをクリアする関数
+        function clearInput() {
+            document.getElementById("input").value = "";
+        }
+    </script>
+</body>
+</html>
